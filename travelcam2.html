@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TravelCam — Rent a Camera in Korea</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:'Outfit',sans-serif;background:#f7f5f2;color:#1a1714;overflow-x:hidden;cursor:none}
+
+:root{
+  --cream:#f7f5f2;--cream2:#f0ede8;--cream3:#e8e4de;--sand:#d4cec5;--stone:#8e8880;
+  --charcoal:#3a3630;--ink:#1a1714;--accent:#b07d5a;--accent-light:#eeddd0;
+  --accent-deep:#7d5540;--green:#4a6741;--green-light:#e8f0e6;
+  --border:rgba(26,23,20,.09);--border-med:rgba(26,23,20,.15);
+  --r:14px;--rsm:8px;--sh:0 2px 20px rgba(26,23,20,.07);--shL:0 8px 48px rgba(26,23,20,.11);
+}
+
+h1,h2,h3,.serif{font-family:'Cormorant Garamond',serif;line-height:1.08;font-weight:300}
+p{line-height:1.72;color:var(--stone)}
+a{color:inherit;text-decoration:none}
+
+.cur{width:8px;height:8px;background:var(--accent);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;transform:translate(-50%,-50%)}
+.curR{width:30px;height:30px;border:1px solid rgba(176,125,90,.35);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .22s ease,top .22s ease}
+
+.container{max-width:1180px;margin:0 auto;padding:0 28px}
+.section{padding:96px 0}
+.ey{font-family:'Outfit',sans-serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:500;display:block;margin-bottom:16px}
+.page{display:none}.page.active{display:block}
+
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:'Outfit',sans-serif;font-weight:500;font-size:14px;padding:13px 26px;border-radius:100px;border:none;cursor:none;transition:all .22s;letter-spacing:.015em}
+.bp{background:var(--ink);color:#fff}.bp:hover{background:var(--charcoal);transform:translateY(-1px);box-shadow:0 8px 24px rgba(26,23,20,.18)}
+.bo{background:transparent;color:var(--ink);border:1px solid var(--border-med)}.bo:hover{border-color:var(--ink);background:rgba(26,23,20,.03)}
+.bw{background:var(--accent);color:#fff}.bw:hover{background:var(--accent-deep);transform:translateY(-1px)}
+.blg{padding:16px 36px;font-size:15px}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:20px 0;transition:all .3s}
+nav.sc{background:rgba(247,245,242,.93);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:14px 0}
+.nv{display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;letter-spacing:.03em;display:flex;align-items:center;gap:10px}
+.lm{width:28px;height:28px;border-radius:50%;border:1px solid var(--border-med);display:flex;align-items:center;justify-content:center;font-size:12px}
+.nl{display:flex;align-items:center;gap:4px;list-style:none}
+.nl a{padding:7px 14px;border-radius:100px;font-size:13px;color:var(--stone);transition:all .2s;font-weight:400}
+.nl a:hover,.nl a.act{color:var(--ink);background:rgba(26,23,20,.05)}
+.nc{display:flex;align-items:center;gap:10px}
+.hb{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:none;padding:6px}
+.hb span{width:22px;height:1.5px;background:var(--ink);border-radius:2px;display:block;transition:all .3s}
+.mm{display:none;position:fixed;inset:0;z-index:999;background:var(--cream);padding:88px 28px 40px;flex-direction:column;gap:4px}
+.mm.op{display:flex}
+.mm a{font-family:'Cormorant Garamond',serif;font-size:34px;padding:12px 0;border-bottom:1px solid var(--border);opacity:0;transform:translateY(14px);animation:up .38s forwards}
+.mm a:nth-child(1){animation-delay:.04s}.mm a:nth-child(2){animation-delay:.08s}
+.mm a:nth-child(3){animation-delay:.12s}.mm a:nth-child(4){animation-delay:.16s}
+@keyframes up{to{opacity:1;transform:none}}
+
+.hero{min-height:100vh;display:flex;align-items:center;padding-top:80px;position:relative;overflow:hidden}
+.hblob{position:absolute;width:580px;height:580px;border-radius:50%;background:radial-gradient(circle,rgba(176,125,90,.1) 0%,transparent 68%);top:-80px;right:-80px;pointer-events:none}
+.hblob2{position:absolute;width:360px;height:360px;border-radius:50%;background:radial-gradient(circle,rgba(74,103,65,.07) 0%,transparent 68%);bottom:-40px;left:10px;pointer-events:none}
+.hg{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center;position:relative;z-index:1}
+.hero h1{font-size:clamp(46px,5.5vw,78px);margin-bottom:20px}
+.hero h1 em{font-style:italic;color:var(--accent)}
+.hdesc{font-size:16px;max-width:400px;margin-bottom:30px;line-height:1.75}
+.hact{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.hprf{display:flex;align-items:center;gap:14px;margin-top:34px}
+.avs{display:flex}
+.avs span{width:32px;height:32px;border-radius:50%;border:2px solid var(--cream);background:var(--cream3);display:flex;align-items:center;justify-content:center;font-size:13px;margin-left:-7px}
+.avs span:first-child{margin-left:0}
+.pft{font-size:13px;color:var(--stone)}.pft strong{color:var(--ink)}
+.hv{position:relative}
+.hiw{border-radius:22px;overflow:hidden;aspect-ratio:4/5;position:relative;background:var(--cream3)}
+.hiw img{width:100%;height:100%;object-fit:cover;display:block}
+.hiw::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(26,23,20,.38))}
+.hil{position:absolute;bottom:20px;left:20px;right:20px;z-index:2}
+.hil h3{font-family:'Cormorant Garamond',serif;font-size:26px;color:#fff;font-weight:300;line-height:1.2}
+.hil span{font-size:11px;color:rgba(255,255,255,.65);letter-spacing:.05em}
+.hfl{position:absolute;background:rgba(247,245,242,.93);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:12px;padding:12px 16px;animation:fl 5s ease-in-out infinite}
+.hfl.f1{top:22px;right:-18px}.hfl.f2{bottom:76px;left:-28px;animation-delay:-2.5s}
+.hfl-l{font-size:10px;color:var(--stone);letter-spacing:.05em;text-transform:uppercase;margin-bottom:2px}
+.hfl-v{font-size:14px;font-weight:500;color:var(--ink)}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+.sh{text-align:center;margin-bottom:52px}
+.sh h2{font-size:clamp(30px,4vw,50px);margin-bottom:12px}
+.sh p{max-width:460px;margin:0 auto;font-size:15px}
+
+.stbg{background:var(--ink)}
+.stbg .sh h2{color:var(--cream)}.stbg .sh p{color:var(--sand)}.stbg .ey{color:var(--accent-light)}
+.stg{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.06);border-radius:var(--r);overflow:hidden}
+.st{padding:42px 34px;background:#2a2723;transition:background .3s}
+.st:hover{background:#242119}
+.stn{font-family:'Cormorant Garamond',serif;font-size:62px;color:rgba(255,255,255,.1);line-height:1;margin-bottom:18px;transition:color .3s;font-weight:300}
+.st:hover .stn{color:rgba(176,125,90,.35)}
+.sti{width:40px;height:40px;border-radius:9px;background:rgba(176,125,90,.14);display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:14px}
+.st h3{font-family:'Cormorant Garamond',serif;font-size:21px;color:var(--cream);margin-bottom:9px;font-weight:400}
+.st p{font-size:13px;color:var(--sand);line-height:1.7}
+
+.cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px}
+.cc{background:#fff;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:all .28s;position:relative}
+.cc:hover{transform:translateY(-4px);box-shadow:var(--shL);border-color:transparent}
+.ci{height:210px;background:var(--cream2);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.ci img{width:100%;height:100%;object-fit:contain;padding:22px;transition:transform .45s}
+.cc:hover .ci img{transform:scale(1.05)}
+.cbdg{position:absolute;top:12px;left:12px;background:var(--ink);color:var(--cream);font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:4px 11px;border-radius:100px;font-weight:500}
+.cck{position:absolute;top:12px;right:12px;width:26px;height:26px;border-radius:7px;background:rgba(247,245,242,.9);border:1px solid var(--border-med);display:flex;align-items:center;justify-content:center;font-size:11px;cursor:none;transition:all .2s}
+.cck.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.cb{padding:18px 20px}
+.cn{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:400;margin-bottom:2px}
+.cs{font-size:11px;color:var(--stone);margin-bottom:12px}
+.cst{color:#c4933f;font-size:12px;letter-spacing:1px}
+.cr{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--stone);margin-bottom:14px}
+.cf{display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid var(--border)}
+.cp{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300}.cp span{font-size:12px;font-family:'Outfit',sans-serif;color:var(--stone);font-weight:400}
+.ci2{font-size:11px;color:var(--stone);margin-top:1px}
+.ca{display:flex;gap:8px;margin-top:13px}
+.ca .btn{flex:1;justify-content:center;font-size:12px;padding:10px 14px}
+
+.cpbar{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(18px);background:#fff;border:1px solid var(--border-med);border-radius:var(--r);padding:13px 20px;display:flex;align-items:center;gap:14px;z-index:500;opacity:0;pointer-events:none;transition:all .28s;box-shadow:var(--shL);min-width:320px;justify-content:space-between}
+.cpbar.sh2{opacity:1;pointer-events:all;transform:translateX(-50%) translateY(0)}
+.cpt strong{display:block;font-size:13px;color:var(--ink)}.cpt span{font-size:12px;color:var(--stone)}
+
+.ctw{overflow-x:auto;margin-top:36px;border-radius:var(--r);border:1px solid var(--border)}
+.ct{width:100%;border-collapse:collapse;background:#fff}
+.ct th,.ct td{padding:16px 20px;text-align:left;border-bottom:1px solid var(--border)}
+.ct th{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--stone);background:var(--cream);font-weight:500}
+.ct td{font-size:13px;color:var(--ink)}
+.ct tr:last-child td{border-bottom:none}
+.cth{text-align:center;background:var(--cream2)!important}
+.cth img{width:70px;height:54px;object-fit:contain;margin:0 auto 8px;display:block}
+.cth h4{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:400;margin-bottom:2px}
+.cthp{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--accent);font-weight:300}
+.btr{height:4px;background:var(--cream3);border-radius:3px;margin-top:5px}
+.bfill{height:4px;background:var(--accent);border-radius:3px}
+.btag{display:inline-block;padding:3px 10px;border-radius:100px;font-size:11px;background:var(--accent-light);color:var(--accent-deep);border:1px solid rgba(176,125,90,.18)}
+.ct tr:hover td{background:var(--cream)}
+
+.bkg{display:grid;grid-template-columns:1fr 350px;gap:32px;margin-top:40px;align-items:start}
+.fc{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:34px}
+.fc h2{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;margin-bottom:28px}
+.fg{margin-bottom:20px}
+.fl{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--stone);margin-bottom:7px;font-weight:500}
+.fi,.fsl{width:100%;background:var(--cream);border:1px solid var(--border);border-radius:var(--rsm);padding:12px 15px;color:var(--ink);font-family:'Outfit',sans-serif;font-size:14px;transition:border-color .2s;appearance:none}
+.fi:focus,.fsl:focus{outline:none;border-color:var(--accent);background:#fff}
+.frw{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.trow{display:flex;align-items:center;justify-content:space-between;background:var(--cream);border:1px solid var(--border);border-radius:var(--rsm);padding:13px 15px}
+.ti h4{font-size:14px;font-weight:500;margin-bottom:2px}.ti p{font-size:12px;color:var(--stone)}
+.tog{width:42px;height:23px;border-radius:100px;background:var(--sand);border:none;cursor:none;position:relative;transition:background .2s;flex-shrink:0}
+.tog.on{background:var(--ink)}.tog::after{content:'';position:absolute;width:17px;height:17px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform .2s}
+.tog.on::after{transform:translateX(19px)}
+.sc2{background:var(--cream2);border:1px solid var(--border);border-radius:var(--r);padding:24px;position:sticky;top:96px}
+.sc2 h3{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:400;margin-bottom:20px}
+.scam{display:flex;gap:12px;align-items:center;padding:12px;background:#fff;border-radius:var(--rsm);margin-bottom:20px;border:1px solid var(--border)}
+.scamimg{width:54px;height:42px;object-fit:contain}
+.scami h4{font-size:14px;font-weight:500;margin-bottom:1px}.scami p{font-size:11px;color:var(--stone)}
+.sl{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.sl:last-of-type{border-bottom:none}
+.stot{display:flex;justify-content:space-between;padding-top:12px;border-top:1px solid var(--border-med);margin-top:3px}
+.stot span:first-child{font-size:13px;font-weight:500}
+.stot span:last-child{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300}
+.cfbtn{width:100%;justify-content:center;margin-top:16px}
+.bn{margin-top:14px;padding:12px;background:var(--accent-light);border-radius:var(--rsm);font-size:11px;color:var(--accent-deep);line-height:1.6;display:flex;gap:8px}
+
+.tg{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.tc{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:24px}
+.tt{display:flex;align-items:center;gap:11px;margin-bottom:13px}
+.tav{width:40px;height:40px;border-radius:50%;background:var(--cream3);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.tnm{font-size:14px;font-weight:500}.tfr{font-size:11px;color:var(--stone)}
+.tstar{color:#c4933f;font-size:11px;letter-spacing:1px;margin-bottom:2px}
+.ttxt{font-size:13px;color:var(--stone);line-height:1.72}
+
+.pg{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.pc{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:28px;text-align:center;transition:all .28s;position:relative;overflow:hidden}
+.pc:hover{box-shadow:var(--shL);transform:translateY(-3px)}
+.pcf{border-color:var(--accent);border-width:1.5px}
+.pcfb{position:absolute;top:0;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:4px 14px;border-radius:0 0 7px 7px;font-weight:500}
+.pci{width:88px;height:66px;object-fit:contain;margin:0 auto 12px;display:block}
+.pcn{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:400;margin-bottom:3px}
+.pcs{font-size:12px;color:var(--stone);margin-bottom:18px}
+.pca{font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:300;line-height:1}
+.pca sup{font-size:20px;vertical-align:super}.pca sub{font-size:14px;font-family:'Outfit',sans-serif;color:var(--stone);font-weight:400}
+.pfs{margin:20px 0;text-align:left}
+.pf{display:flex;align-items:center;gap:8px;padding:7px 0;font-size:12px;border-bottom:1px solid var(--border)}
+.pf:last-child{border-bottom:none}
+.pfc{width:15px;height:15px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--green);flex-shrink:0}
+.pc .btn{width:100%;justify-content:center}
+
+.hiw-g{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:40px}
+.hiw-c{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:28px;transition:border-color .3s}
+.hiw-c:hover{border-color:var(--sand)}
+.hiw-i{width:42px;height:42px;border-radius:9px;background:var(--cream2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:17px;margin-bottom:16px}
+.hiw-c h3{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:400;margin-bottom:9px}
+.hiw-c p{font-size:13px}.hiw-c.w{grid-column:span 2}
+.fw{background:var(--ink);border-radius:var(--r);padding:40px;margin-top:32px}
+.fw .ey{color:var(--accent-light)}
+.fw h3{font-family:'Cormorant Garamond',serif;color:var(--cream);font-size:30px;font-weight:300;margin-bottom:24px}
+.ffg{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.ff{padding:16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:var(--rsm)}
+.ffi{font-size:18px;margin-bottom:8px}.ff h4{font-size:12px;color:var(--cream);margin-bottom:3px;font-weight:500}.ff p{font-size:11px;color:var(--sand)}
+
+.cts{background:var(--accent);padding:76px 0;text-align:center;position:relative;overflow:hidden}
+.cts::before{content:'';position:absolute;width:460px;height:460px;border-radius:50%;border:1px solid rgba(255,255,255,.13);top:-180px;right:-80px;pointer-events:none}
+.cts::after{content:'';position:absolute;width:280px;height:280px;border-radius:50%;border:1px solid rgba(255,255,255,.09);bottom:-130px;left:60px;pointer-events:none}
+.cts h2{font-family:'Cormorant Garamond',serif;font-size:clamp(30px,4vw,50px);color:#fff;margin-bottom:12px;font-weight:300}
+.cts p{color:rgba(255,255,255,.78);font-size:16px;margin-bottom:30px}
+.cts .bp{background:#fff;color:var(--accent-deep)}.cts .bp:hover{background:var(--cream);box-shadow:0 8px 24px rgba(0,0,0,.14)}
+
+.flt{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px}
+.fb{padding:8px 17px;border-radius:100px;border:1px solid var(--border);background:transparent;color:var(--stone);font-family:'Outfit',sans-serif;font-size:12px;cursor:none;transition:all .2s}
+.fb.on,.fb:hover{background:var(--ink);border-color:var(--ink);color:#fff}
+
+footer{background:var(--ink);padding:52px 0 20px}
+.fg2{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:44px;padding-bottom:40px;border-bottom:1px solid rgba(255,255,255,.07)}
+.flogo{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--cream);margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.fb2 p{font-size:13px;color:var(--sand);margin-top:8px;max-width:250px;line-height:1.7}
+.fsoc{display:flex;gap:8px;margin-top:18px}
+.fs{width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);display:flex;align-items:center;justify-content:center;font-size:13px;cursor:none;transition:all .2s}
+.fs:hover{background:rgba(255,255,255,.11)}
+.fcol h4{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--sand);font-weight:500;margin-bottom:13px}
+.fcol ul{list-style:none}.fcol ul li{margin-bottom:8px}
+.fcol ul li a{font-size:13px;color:var(--stone);transition:color .2s}
+.fcol ul li a:hover{color:var(--cream)}
+.fbot{display:flex;align-items:center;justify-content:space-between;padding-top:20px;font-size:12px;color:var(--stone)}
+
+.ph{padding:116px 0 44px;border-bottom:1px solid var(--border)}
+.ph h1{font-family:'Cormorant Garamond',serif;font-size:clamp(38px,5vw,64px);font-weight:300;margin-bottom:9px;line-height:1.04}
+.ph p{font-size:15px;max-width:460px}
+
+.r{opacity:0;transform:translateY(20px);transition:opacity .6s,transform .6s}.r.v{opacity:1;transform:none}
+
+.modal{position:fixed;inset:0;z-index:2000;background:rgba(26,23,20,.48);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .28s}
+.modal.op{opacity:1;pointer-events:all}
+.mb{background:#fff;border-radius:18px;padding:44px;text-align:center;max-width:380px;width:90%;transform:scale(.95);transition:transform .28s}
+.modal.op .mb{transform:scale(1)}
+.mi{font-size:52px;margin-bottom:14px}
+.mb h2{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;margin-bottom:9px}
+.mb p{font-size:14px;margin-bottom:24px}
+
+@media(max-width:900px){
+  .hg{grid-template-columns:1fr;gap:36px}.hv{display:none}
+  .stg{grid-template-columns:1fr}.tg,.pg{grid-template-columns:1fr}
+  .fg2{grid-template-columns:1fr 1fr}.bkg{grid-template-columns:1fr}
+  .hiw-g{grid-template-columns:1fr}.hiw-c.w{grid-column:span 1}
+  .ffg{grid-template-columns:repeat(2,1fr)}.nl,.nc .bo{display:none}
+  .hb{display:flex}
+  body{cursor:auto}.cur,.curR{display:none}
+}
+@media(max-width:580px){
+  .section{padding:68px 0}.fg2{grid-template-columns:1fr}
+  .cg{grid-template-columns:1fr}.ffg{grid-template-columns:1fr}
+  .frw{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="cur" id="cur"></div>
+<div class="curR" id="curR"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="container nv">
+    <div class="logo"><div class="lm">◉</div>TravelCam</div>
+    <ul class="nl">
+      <li><a href="#" onclick="go('home')" id="nl-home" class="act">Home</a></li>
+      <li><a href="#" onclick="go('cameras')" id="nl-cameras">Cameras</a></li>
+      <li><a href="#" onclick="go('how')" id="nl-how">How it works</a></li>
+      <li><a href="#" onclick="go('booking')" id="nl-booking">Book</a></li>
+    </ul>
+    <div class="nc">
+      <button class="btn bo" onclick="go('cameras')">Browse</button>
+      <button class="btn bp" onclick="go('booking')">Book a Camera</button>
+    </div>
+    <button class="hb" onclick="toggleMM()"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="mm" id="mm">
+  <a href="#" onclick="go('home');toggleMM()">Home</a>
+  <a href="#" onclick="go('cameras');toggleMM()">Cameras</a>
+  <a href="#" onclick="go('how');toggleMM()">How it works</a>
+  <a href="#" onclick="go('booking');toggleMM()">Book</a>
+</div>
+
+<!-- ═══ HOME ═══════════════════════════════════════════════════ -->
+<div id="page-home" class="page active">
+
+<section class="hero">
+  <div class="hblob"></div><div class="hblob2"></div>
+  <div class="container">
+    <div class="hg">
+      <div>
+        <span class="ey">Camera rentals · South Korea</span>
+        <h1>Rent a Camera<br>for Your <em>Korean</em><br>Adventure.</h1>
+        <p class="hdesc">Leave your camera at home. Pick up a premium camera at the airport, capture every moment, and return it when you're done.</p>
+        <div class="hact">
+          <button class="btn bp blg" onclick="go('cameras')">Book Your Camera</button>
+          <button class="btn bo blg" onclick="go('how')">How it works</button>
+        </div>
+        <div class="hprf">
+          <div class="avs"><span>🧑</span><span>👩</span><span>👨</span><span>🧑</span></div>
+          <p class="pft"><strong>2,400+ travelers</strong> have rented with TravelCam</p>
+        </div>
+      </div>
+      <div class="hv">
+        <div class="hiw">
+          <img src="https://images.unsplash.com/photo-1548115184-bc6544d06a58?w=700&q=82&auto=format&fit=crop"
+               onerror="this.src='https://images.unsplash.com/photo-1533105079780-92b9be482077?w=700&q=80'"
+               alt="Traveling in Korea with a camera">
+          <div class="hil">
+            <h3>Capture every moment</h3>
+            <span>Incheon · Busan · Seoul · Jeju</span>
+          </div>
+        </div>
+        <div class="hfl f1"><div class="hfl-l">From only</div><div class="hfl-v">$15 / day</div></div>
+        <div class="hfl f2"><div class="hfl-l">Available at</div><div class="hfl-v">ICN Airport ✈️</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Steps -->
+<section class="section stbg">
+  <div class="container">
+    <div class="sh r"><span class="ey">Simple process</span><h2>Three steps to capture everything.</h2><p>From landing to liftoff, we've got your photography covered.</p></div>
+    <div class="stg">
+      <div class="st r"><div class="stn">01</div><div class="sti">🔍</div><h3>Choose your camera</h3><p>Browse our curated selection — from compact travel shooters to pro vlogging rigs. Filter by price, weight, and use case.</p></div>
+      <div class="st r" style="transition-delay:.08s"><div class="stn">02</div><div class="sti">✈️</div><h3>Pick up at the airport</h3><p>Grab your camera at Incheon or Busan Airport, or from a city partner store in Seoul, Busan, or Jeju.</p></div>
+      <div class="st r" style="transition-delay:.16s"><div class="stn">03</div><div class="sti">🌟</div><h3>Capture &amp; return anywhere</h3><p>Shoot incredible content throughout your trip. Return at any airport or drop-off — or keep it at a preset buy-out price.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- Camera preview -->
+<section class="section" style="background:#fff">
+  <div class="container">
+    <div class="sh r"><span class="ey">Our cameras</span><h2>Every style of traveler covered.</h2><p>Compact, vlog-ready, or professional — we have the right camera for your trip.</p></div>
+    <div class="cg">
+      <div class="cc r">
+        <div class="ci"><span class="cbdg">Vlogging</span>
+          <img src="https://m.media-amazon.com/images/I/71S9jFOJBVL._AC_SX679_.jpg"
+               onerror="this.src='https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=300&q=80'" alt="Sony ZV-1"></div>
+        <div class="cb">
+          <div class="cn">Sony ZV-1</div><div class="cs">Compact vlogging powerhouse · 294g</div>
+          <div class="cr"><span class="cst">★★★★★</span> 4.9 · 234 reviews</div>
+          <div class="cf"><div><div class="cp">$18 <span>/ day</span></div><div class="ci2">Insurance +$5/day · Buy-out $420</div></div></div>
+          <div class="ca"><button class="btn bo" onclick="go('compare')">Compare</button><button class="btn bp" onclick="pick('Sony ZV-1',18);go('booking')">Rent Now</button></div>
+        </div>
+      </div>
+      <div class="cc r" style="transition-delay:.08s">
+        <div class="ci"><span class="cbdg">Travel Creator</span>
+          <img src="https://m.media-amazon.com/images/I/61i+tWFa2cL._AC_SX679_.jpg"
+               onerror="this.src='https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=300&q=80'" alt="Fujifilm X-S20"></div>
+        <div class="cb">
+          <div class="cn">Fujifilm X-S20</div><div class="cs">Aesthetic creator camera · 491g</div>
+          <div class="cr"><span class="cst">★★★★★</span> 4.8 · 178 reviews</div>
+          <div class="cf"><div><div class="cp">$25 <span>/ day</span></div><div class="ci2">Insurance +$5/day · Buy-out $780</div></div></div>
+          <div class="ca"><button class="btn bo" onclick="go('compare')">Compare</button><button class="btn bp" onclick="pick('Fujifilm X-S20',25);go('booking')">Rent Now</button></div>
+        </div>
+      </div>
+      <div class="cc r" style="transition-delay:.16s">
+        <div class="ci"><span class="cbdg">Professional</span>
+          <img src="https://m.media-amazon.com/images/I/61+M04MqQJL._AC_SX679_.jpg"
+               onerror="this.src='https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=300&q=80'" alt="Canon EOS R50"></div>
+        <div class="cb">
+          <div class="cn">Canon EOS R50</div><div class="cs">Entry-level mirrorless · 375g</div>
+          <div class="cr"><span class="cst">★★★★☆</span> 4.7 · 92 reviews</div>
+          <div class="cf"><div><div class="cp">$40 <span>/ day</span></div><div class="ci2">Insurance +$5/day · Buy-out $980</div></div></div>
+          <div class="ca"><button class="btn bo" onclick="go('compare')">Compare</button><button class="btn bp" onclick="pick('Canon EOS R50',40);go('booking')">Rent Now</button></div>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:32px"><button class="btn bo blg" onclick="go('cameras')">View all cameras →</button></div>
+  </div>
+</section>
+
+<!-- Testimonials -->
+<section class="section">
+  <div class="container">
+    <div class="sh r"><span class="ey">Traveler stories</span><h2>They captured Korea. You can too.</h2></div>
+    <div class="tg">
+      <div class="tc r">
+        <div class="tt"><div class="tav">🧑</div><div><div class="tstar">★★★★★</div><div class="tnm">Marcus L.</div><div class="tfr">🇨🇦 Canada · Solo trip, Seoul</div></div></div>
+        <p class="ttxt">"Picked up the Sony ZV-1 at Incheon arrivals. My Instagram Reels from Seoul went viral — 2M views. Couldn't have done it without a proper vlog camera."</p>
+      </div>
+      <div class="tc r" style="transition-delay:.08s">
+        <div class="tt"><div class="tav">👩</div><div><div class="tstar">★★★★★</div><div class="tnm">Sofia R.</div><div class="tfr">🇧🇷 Brazil · Couple trip, Busan</div></div></div>
+        <p class="ttxt">"The Fujifilm X-S20 was perfect for Busan's light. The film simulations are incredible — every photo looks like a postcard. Drop-off at the airport was so easy."</p>
+      </div>
+      <div class="tc r" style="transition-delay:.16s">
+        <div class="tt"><div class="tav">👨</div><div><div class="tstar">★★★★★</div><div class="tnm">James K.</div><div class="tfr">🇦🇺 Australia · Family trip, 2 weeks</div></div></div>
+        <p class="ttxt">"We loved the Canon R50 so much we used the buy-out option. The insurance saved us when our kid dropped it on day 3 — not charged a cent extra."</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section class="section" style="background:var(--cream2)">
+  <div class="container">
+    <div class="sh r"><span class="ey">Simple pricing</span><h2>No surprises. Just great shots.</h2><p>Daily rates, optional insurance, and a buy-out option if you fall in love.</p></div>
+    <div class="pg">
+      <div class="pc r">
+        <img class="pci" src="https://m.media-amazon.com/images/I/71S9jFOJBVL._AC_SX679_.jpg" onerror="this.style.display='none'" alt="Sony ZV-1">
+        <div class="pcn">Sony ZV-1</div><div class="pcs">Compact vlogger</div>
+        <div class="pca"><sup>$</sup>18<sub>/day</sub></div>
+        <div class="pfs"><div class="pf"><div class="pfc">✓</div>Airport pickup included</div><div class="pf"><div class="pfc">✓</div>Any drop-off location</div><div class="pf"><div class="pfc">✓</div>+$5/day insurance</div><div class="pf"><div class="pfc">✓</div>Buy-out: $420</div></div>
+        <button class="btn bo" onclick="pick('Sony ZV-1',18);go('booking')">Book this camera</button>
+      </div>
+      <div class="pc pcf r" style="transition-delay:.08s">
+        <div class="pcfb">Most popular</div>
+        <img class="pci" src="https://m.media-amazon.com/images/I/61i+tWFa2cL._AC_SX679_.jpg" onerror="this.style.display='none'" alt="Fujifilm X-S20">
+        <div class="pcn">Fujifilm X-S20</div><div class="pcs">Travel creator</div>
+        <div class="pca"><sup>$</sup>25<sub>/day</sub></div>
+        <div class="pfs"><div class="pf"><div class="pfc">✓</div>Airport pickup included</div><div class="pf"><div class="pfc">✓</div>Any drop-off location</div><div class="pf"><div class="pfc">✓</div>+$5/day insurance</div><div class="pf"><div class="pfc">✓</div>Buy-out: $780</div></div>
+        <button class="btn bp" onclick="pick('Fujifilm X-S20',25);go('booking')">Book this camera</button>
+      </div>
+      <div class="pc r" style="transition-delay:.16s">
+        <img class="pci" src="https://m.media-amazon.com/images/I/61+M04MqQJL._AC_SX679_.jpg" onerror="this.style.display='none'" alt="Canon EOS R50">
+        <div class="pcn">Canon EOS R50</div><div class="pcs">Entry professional</div>
+        <div class="pca"><sup>$</sup>40<sub>/day</sub></div>
+        <div class="pfs"><div class="pf"><div class="pfc">✓</div>Airport pickup included</div><div class="pf"><div class="pfc">✓</div>Any drop-off location</div><div class="pf"><div class="pfc">✓</div>+$5/day insurance</div><div class="pf"><div class="pfc">✓</div>Buy-out: $980</div></div>
+        <button class="btn bo" onclick="pick('Canon EOS R50',40);go('booking')">Book this camera</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="cts"><div class="container"><h2>Ready to capture Korea?</h2><p>Join 2,400+ travelers who've rented with TravelCam.</p><button class="btn bp blg" onclick="go('cameras')">Browse cameras →</button></div></div>
+
+</div><!-- /home -->
+
+<!-- ═══ CAMERAS ══════════════════════════════════════════════════ -->
+<div id="page-cameras" class="page">
+<div style="padding-top:80px;min-height:100vh;background:#fff">
+<div class="container">
+  <div class="ph"><span class="ey">Our inventory</span><h1>Find Your Perfect Camera.</h1><p>From compact to professional — rent the right gear for your Korean adventure.</p>
+    <div class="flt">
+      <button class="fb on" onclick="filt('all',this)">All Cameras</button>
+      <button class="fb" onclick="filt('compact',this)">Compact Travel</button>
+      <button class="fb" onclick="filt('vlogging',this)">Vlogging</button>
+      <button class="fb" onclick="filt('professional',this)">Professional</button>
+    </div>
+  </div>
+  <div class="cg" id="camGrid" style="padding:40px 0">
+    <div class="cc" data-cat="vlogging"><div class="ci"><span class="cbdg">Vlogging</span><div class="cck" id="ck1" onclick="tCmp(1,'Sony ZV-1')">+</div><img src="https://m.media-amazon.com/images/I/71S9jFOJBVL._AC_SX679_.jpg" onerror="this.src='https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=300&q=80'" alt="Sony ZV-1"></div><div class="cb"><div class="cn">Sony ZV-1</div><div class="cs">Compact · 294g · 4K · Flip screen</div><div class="cr"><span class="cst">★★★★★</span> 4.9 · 234 reviews</div><div class="cf"><div><div class="cp">$18 <span>/ day</span></div><div class="ci2">+$5 ins · $420 buy-out</div></div></div><div class="ca"><button class="btn bo" onclick="tCmp(1,'Sony ZV-1')">+ Compare</button><button class="btn bp" onclick="pick('Sony ZV-1',18);go('booking')">Rent Now</button></div></div></div>
+
+    <div class="cc" data-cat="compact"><div class="ci"><span class="cbdg">Travel Creator</span><div class="cck" id="ck2" onclick="tCmp(2,'Fujifilm X-S20')">+</div><img src="https://m.media-amazon.com/images/I/61i+tWFa2cL._AC_SX679_.jpg" onerror="this.src='https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=300&q=80'" alt="Fujifilm X-S20"></div><div class="cb"><div class="cn">Fujifilm X-S20</div><div class="cs">APS-C · 491g · 6.2K · Film simulations</div><div class="cr"><span class="cst">★★★★★</span> 4.8 · 178 reviews</div><div class="cf"><div><div class="cp">$25 <span>/ day</span></div><div class="ci2">+$5 ins · $780 buy-out</div></div></div><div class="ca"><button class="btn bo" onclick="tCmp(2,'Fujifilm X-S20')">+ Compare</button><button class="btn bp" onclick="pick('Fujifilm X-S20',25);go('booking')">Rent Now</button></div></div></div>
+
+    <div class="cc" data-cat="professional"><div class="ci"><span class="cbdg">Professional</span><div class="cck" id="ck3" onclick="tCmp(3,'Canon EOS R50')">+</div><img src="https://m.media-amazon.com/images/I/61+M04MqQJL._AC_SX679_.jpg" onerror="this.src='https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=300&q=80'" alt="Canon EOS R50"></div><div class="cb"><div class="cn">Canon EOS R50</div><div class="cs">Mirrorless · 375g · 4K RAW</div><div class="cr"><span class="cst">★★★★☆</span> 4.7 · 92 reviews</div><div class="cf"><div><div class="cp">$40 <span>/ day</span></div><div class="ci2">+$5 ins · $980 buy-out</div></div></div><div class="ca"><button class="btn bo" onclick="tCmp(3,'Canon EOS R50')">+ Compare</button><button class="btn bp" onclick="pick('Canon EOS R50',40);go('booking')">Rent Now</button></div></div></div>
+
+    <div class="cc" data-cat="compact"><div class="ci"><span class="cbdg">Compact Travel</span><div class="cck" id="ck4" onclick="tCmp(4,'GoPro Hero 12')">+</div><img src="https://m.media-amazon.com/images/I/71gidVGQIhL._AC_SX679_.jpg" onerror="this.src='https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=300&q=80'" alt="GoPro Hero 12"></div><div class="cb"><div class="cn">GoPro Hero 12</div><div class="cs">Action · 154g · 5.3K · Waterproof</div><div class="cr"><span class="cst">★★★★☆</span> 4.6 · 156 reviews</div><div class="cf"><div><div class="cp">$15 <span>/ day</span></div><div class="ci2">+$5 ins · $320 buy-out</div></div></div><div class="ca"><button class="btn bo" onclick="tCmp(4,'GoPro Hero 12')">+ Compare</button><button class="btn bp" onclick="pick('GoPro Hero 12',15);go('booking')">Rent Now</button></div></div></div>
+
+    <div class="cc" data-cat="vlogging"><div class="ci"><span class="cbdg">Vlogging</span><div class="cck" id="ck5" onclick="tCmp(5,'DJI Osmo Pocket 3')">+</div><img src="https://m.media-amazon.com/images/I/61xWD4xKolL._AC_SX679_.jpg" onerror="this.src='https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=300&q=80'" alt="DJI Osmo Pocket 3"></div><div class="cb"><div class="cn">DJI Osmo Pocket 3</div><div class="cs">Gimbal · 179g · 4K 120fps</div><div class="cr"><span class="cst">★★★★★</span> 4.9 · 201 reviews</div><div class="cf"><div><div class="cp">$22 <span>/ day</span></div><div class="ci2">+$5 ins · $520 buy-out</div></div></div><div class="ca"><button class="btn bo" onclick="tCmp(5,'DJI Osmo Pocket 3')">+ Compare</button><button class="btn bp" onclick="pick('DJI Osmo Pocket 3',22);go('booking')">Rent Now</button></div></div></div>
+
+    <div class="cc" data-cat="professional"><div class="ci"><span class="cbdg">Professional</span><div class="cck" id="ck6" onclick="tCmp(6,'Sony A7 IV')">+</div><img src="https://m.media-amazon.com/images/I/71YbwKT-d3L._AC_SX679_.jpg" onerror="this.src='https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=300&q=80'" alt="Sony A7 IV"></div><div class="cb"><div class="cn">Sony A7 IV</div><div class="cs">Full-frame · 658g · 4K 60fps</div><div class="cr"><span class="cst">★★★★★</span> 4.9 · 67 reviews</div><div class="cf"><div><div class="cp">$55 <span>/ day</span></div><div class="ci2">+$8 ins · $2,200 buy-out</div></div></div><div class="ca"><button class="btn bo" onclick="tCmp(6,'Sony A7 IV')">+ Compare</button><button class="btn bp" onclick="pick('Sony A7 IV',55);go('booking')">Rent Now</button></div></div></div>
+  </div>
+</div></div></div>
+
+<div class="cpbar" id="cmpBar">
+  <div class="cpt"><strong id="cmpCnt">0 cameras selected</strong><span>Select up to 3 to compare</span></div>
+  <button class="btn bp" onclick="go('compare')">Compare →</button>
+</div>
+
+<!-- ═══ COMPARE ═════════════════════════════════════════════════ -->
+<div id="page-compare" class="page">
+<div style="padding-top:80px;min-height:100vh">
+<div class="container">
+  <div class="ph"><span class="ey">Side by side</span><h1>Compare Cameras.</h1><p>Find the perfect match for your travel style and budget.</p></div>
+  <div class="ctw">
+    <table class="ct">
+      <thead><tr>
+        <th style="width:150px">Specification</th>
+        <th class="cth"><img src="https://m.media-amazon.com/images/I/71S9jFOJBVL._AC_SX679_.jpg" onerror="this.style.display='none'" alt="Sony ZV-1"><h4>Sony ZV-1</h4><div class="cthp">$18<span style="font-size:13px;font-family:'Outfit',sans-serif;color:var(--stone);font-weight:400">/day</span></div></th>
+        <th class="cth"><img src="https://m.media-amazon.com/images/I/61i+tWFa2cL._AC_SX679_.jpg" onerror="this.style.display='none'" alt="Fujifilm X-S20"><h4>Fujifilm X-S20</h4><div class="cthp">$25<span style="font-size:13px;font-family:'Outfit',sans-serif;color:var(--stone);font-weight:400">/day</span></div></th>
+        <th class="cth"><img src="https://m.media-amazon.com/images/I/61+M04MqQJL._AC_SX679_.jpg" onerror="this.style.display='none'" alt="Canon EOS R50"><h4>Canon EOS R50</h4><div class="cthp">$40<span style="font-size:13px;font-family:'Outfit',sans-serif;color:var(--stone);font-weight:400">/day</span></div></th>
+      </tr></thead>
+      <tbody>
+        <tr><td><strong>Weight</strong></td><td>294g</td><td>491g</td><td>375g</td></tr>
+        <tr><td><strong>Sensor</strong></td><td>1" CMOS</td><td>APS-C X-Trans</td><td>APS-C CMOS</td></tr>
+        <tr><td><strong>Max video</strong></td><td>4K 30fps</td><td>6.2K 30fps</td><td>4K RAW</td></tr>
+        <tr><td><strong>Battery</strong></td>
+          <td>~260 shots<div class="btr"><div class="bfill" style="width:35%"></div></div></td>
+          <td>~800 shots<div class="btr"><div class="bfill" style="width:100%"></div></div></td>
+          <td>~670 shots<div class="btr"><div class="bfill" style="width:84%"></div></div></td>
+        </tr>
+        <tr><td><strong>Stabilization</strong></td><td>OIS</td><td>IBIS 7-stop</td><td>Hybrid IS</td></tr>
+        <tr><td><strong>Best for</strong></td><td><span class="btag">Vlogging</span></td><td><span class="btag">Aesthetic travel</span></td><td><span class="btag">Pro shoots</span></td></tr>
+        <tr><td><strong>Insurance/day</strong></td><td>+$5</td><td>+$5</td><td>+$5</td></tr>
+        <tr><td><strong>Buy-out price</strong></td><td style="color:var(--accent);font-weight:500">$420</td><td style="color:var(--accent);font-weight:500">$780</td><td style="color:var(--accent);font-weight:500">$980</td></tr>
+        <tr><td></td>
+          <td><button class="btn bp" style="font-size:12px;padding:9px 18px" onclick="pick('Sony ZV-1',18);go('booking')">Book →</button></td>
+          <td><button class="btn bp" style="font-size:12px;padding:9px 18px" onclick="pick('Fujifilm X-S20',25);go('booking')">Book →</button></td>
+          <td><button class="btn bp" style="font-size:12px;padding:9px 18px" onclick="pick('Canon EOS R50',40);go('booking')">Book →</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div></div></div>
+
+<!-- ═══ BOOKING ══════════════════════════════════════════════════ -->
+<div id="page-booking" class="page">
+<div style="padding-top:80px;min-height:100vh">
+<div class="container">
+  <div class="ph"><span class="ey">Book your rental</span><h1>Almost There.</h1><p>Complete your booking in under 2 minutes.</p></div>
+  <div class="bkg">
+    <div class="fc">
+      <h2>Booking details</h2>
+      <div class="fg"><label class="fl">Camera</label><select class="fsl" id="bkCam" onchange="calcSum()"><option value="Sony ZV-1|18">Sony ZV-1 — $18/day</option><option value="Fujifilm X-S20|25">Fujifilm X-S20 — $25/day</option><option value="Canon EOS R50|40">Canon EOS R50 — $40/day</option><option value="GoPro Hero 12|15">GoPro Hero 12 — $15/day</option><option value="DJI Osmo Pocket 3|22">DJI Osmo Pocket 3 — $22/day</option></select></div>
+      <div class="frw"><div class="fg"><label class="fl">Start date</label><input type="date" class="fi" id="d1" onchange="calcSum()"></div><div class="fg"><label class="fl">End date</label><input type="date" class="fi" id="d2" onchange="calcSum()"></div></div>
+      <div class="fg"><label class="fl">Pickup location</label><select class="fsl"><option>✈️ Incheon International Airport (ICN)</option><option>✈️ Gimhae International Airport (PUS) — Busan</option><option>🏙️ Seoul City Store — Hongdae</option><option>🏙️ Seoul City Store — Myeongdong</option><option>🏙️ Busan City Store — Haeundae</option></select></div>
+      <div class="fg"><label class="fl">Return location</label><select class="fsl"><option>✈️ Incheon International Airport (ICN)</option><option>✈️ Gimhae International Airport (PUS)</option><option>🏙️ Seoul Drop-off — Hongdae</option><option>🏙️ Seoul Drop-off — Myeongdong</option><option>🏙️ Busan Drop-off — Haeundae</option></select></div>
+      <div class="fg"><label class="fl">Optional insurance</label><div class="trow"><div class="ti"><h4>Damage &amp; Theft Protection</h4><p>Covers accidental damage. +$5/day.</p></div><button class="tog" id="insTog" onclick="togIns()"></button></div></div>
+      <div class="fg"><label class="fl">Full name</label><input type="text" class="fi" placeholder="Your full name"></div>
+      <div class="fg"><label class="fl">Email</label><input type="email" class="fi" placeholder="you@email.com"></div>
+      <div class="fg"><label class="fl">Card number</label><input type="text" class="fi" placeholder="1234 5678 9012 3456"></div>
+      <div class="frw"><div class="fg"><label class="fl">Expiry</label><input type="text" class="fi" placeholder="MM / YY"></div><div class="fg"><label class="fl">CVV</label><input type="text" class="fi" placeholder="•••"></div></div>
+    </div>
+    <div class="sc2">
+      <h3>Booking summary</h3>
+      <div class="scam">
+        <img class="scamimg" id="sumImg" src="https://m.media-amazon.com/images/I/71S9jFOJBVL._AC_SX679_.jpg" onerror="this.style.display='none'" alt="">
+        <div class="scami"><h4 id="sumName">Sony ZV-1</h4><p id="sumMeta">Select dates to see total</p></div>
+      </div>
+      <div class="sl"><span>Daily rate</span><span id="sDaily">$18/day</span></div>
+      <div class="sl"><span>Rental days</span><span id="sDays">—</span></div>
+      <div class="sl" id="sInsRow" style="display:none"><span>Insurance</span><span id="sIns">—</span></div>
+      <div class="sl"><span>Pickup &amp; return</span><span style="color:var(--green);font-size:12px">Included ✓</span></div>
+      <div class="stot"><span>Total</span><span id="sTotal">—</span></div>
+      <button class="btn bp blg cfbtn" onclick="doConfirm()">Confirm booking →</button>
+      <div class="bn"><span>ℹ️</span><span>If the camera isn't returned, it will be automatically purchased at the listed buy-out price. Insurance covers accidental damage.</span></div>
+    </div>
+  </div>
+</div></div></div>
+
+<!-- ═══ HOW IT WORKS ═════════════════════════════════════════════ -->
+<div id="page-how" class="page">
+<div style="padding-top:80px;min-height:100vh">
+<div class="container">
+  <div class="ph"><span class="ey">The full picture</span><h1>How TravelCam Works.</h1><p>Everything you need to know before your trip.</p></div>
+  <div class="hiw-g">
+    <div class="hiw-c"><div class="hiw-i">✈️</div><h3>Airport pickup</h3><p>Our cameras are available at Incheon and Gimhae (Busan) airports. Head to the TravelCam kiosk in arrivals — camera is charged and ready to shoot.</p></div>
+    <div class="hiw-c"><div class="hiw-i">🏙️</div><h3>City store pickup</h3><p>Pick up from partner stores in Hongdae, Myeongdong (Seoul) or Haeundae (Busan). Walk-in or pre-book. Staff help you get comfortable with your camera.</p></div>
+    <div class="hiw-c"><div class="hiw-i">📦</div><h3>Drop-off anywhere</h3><p>Return at any TravelCam kiosk or city drop-off. Pop it in the return box before your flight. Deposit refunded within 24 hours.</p></div>
+    <div class="hiw-c"><div class="hiw-i">🛡️</div><h3>Optional insurance</h3><p>Add damage protection for +$5/day — covers drops, spills, and theft. No deductibles, no hidden fees. Just peace of mind.</p></div>
+    <div class="hiw-c w"><div class="hiw-i">💳</div><h3>The buy-out option</h3><p>Fallen in love with your rental? Every camera has a preset buy-out price shown clearly before you book. If you don't return it, the buy-out price is charged automatically. Think of it as a no-pressure trial before purchasing.</p></div>
+  </div>
+  <div class="fw">
+    <span class="ey">Coming soon</span>
+    <h3>The future of travel photography.</h3>
+    <div class="ffg">
+      <div class="ff"><div class="ffi">☁️</div><h4>Auto cloud upload</h4><p>Memory card with instant cloud backup.</p></div>
+      <div class="ff"><div class="ffi">🎒</div><h4>Creator camera kits</h4><p>Camera + mic + tripod bundles.</p></div>
+      <div class="ff"><div class="ffi">🗺️</div><h4>Korea photo map</h4><p>Crowdsourced best photography spots.</p></div>
+      <div class="ff"><div class="ffi">✨</div><h4>AI photo enhancement</h4><p>One-click Korea travel aesthetics.</p></div>
+      <div class="ff"><div class="ffi">🎨</div><h4>Korean travel presets</h4><p>Film presets for temples, streets &amp; coasts.</p></div>
+      <div class="ff"><div class="ffi">📱</div><h4>Social direct upload</h4><p>Camera → Instagram/TikTok instantly.</p></div>
+    </div>
+  </div>
+</div></div></div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="fg2">
+      <div class="fb2"><div class="flogo"><div class="lm" style="border-color:rgba(255,255,255,.14);color:var(--cream)">◉</div>TravelCam</div><p>Camera rental marketplace for travelers exploring South Korea. Pick up at the airport, shoot everything, return anywhere.</p><div class="fsoc"><div class="fs">📸</div><div class="fs">🎵</div><div class="fs">🐦</div><div class="fs">▶️</div></div></div>
+      <div class="fcol"><h4>Cameras</h4><ul><li><a href="#">Compact cameras</a></li><li><a href="#">Vlogging cameras</a></li><li><a href="#">Professional</a></li><li><a href="#">Compare all</a></li></ul></div>
+      <div class="fcol"><h4>Company</h4><ul><li><a href="#">How it works</a></li><li><a href="#">Pickup locations</a></li><li><a href="#">Insurance info</a></li><li><a href="#">Contact us</a></li></ul></div>
+      <div class="fcol"><h4>Legal</h4><ul><li><a href="#">FAQ</a></li><li><a href="#">Terms of service</a></li><li><a href="#">Privacy policy</a></li><li><a href="#">Refund policy</a></li></ul></div>
+    </div>
+    <div class="fbot"><span>© 2025 TravelCam. All rights reserved.</span><span>Made for travelers in Korea</span></div>
+  </div>
+</footer>
+
+<!-- Modal -->
+<div class="modal" id="modal">
+  <div class="mb"><div class="mi">🎉</div><h2>Booking confirmed!</h2><p>Your camera will be waiting at pickup. Check your email for details and airport instructions.</p><button class="btn bp blg" onclick="closeModal()">Let's go →</button></div>
+</div>
+
+<script>
+// Cursor
+const cur=document.getElementById('cur'),curR=document.getElementById('curR');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+(function anim(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;curR.style.left=rx+'px';curR.style.top=ry+'px';requestAnimationFrame(anim);})();
+
+// Nav
+window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('sc',scrollY>20));
+
+// Page routing
+function go(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nl a').forEach(a=>a.classList.remove('act'));
+  const el=document.getElementById('nl-'+id);if(el)el.classList.add('act');
+  window.scrollTo({top:0,behavior:'smooth'});
+  setTimeout(initRev,80);
+}
+function toggleMM(){document.getElementById('mm').classList.toggle('op');}
+
+// Reveal
+function initRev(){
+  const ob=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('v');}),{threshold:.1});
+  document.querySelectorAll('.r:not(.v)').forEach(el=>ob.observe(el));
+}
+initRev();
+
+// Filter
+function filt(cat,btn){
+  document.querySelectorAll('.fb').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
+  document.querySelectorAll('#camGrid .cc').forEach(c=>{c.style.display=(cat==='all'||c.dataset.cat===cat)?'block':'none';});
+}
+
+// Compare
+const cList=[];
+function tCmp(id,name){
+  const i=cList.findIndex(c=>c.id===id);const ck=document.getElementById('ck'+id);
+  if(i>-1){cList.splice(i,1);ck.textContent='+';ck.classList.remove('on');}
+  else if(cList.length<3){cList.push({id,name});ck.textContent='✓';ck.classList.add('on');}
+  document.getElementById('cmpCnt').textContent=cList.length+' camera'+(cList.length!==1?'s':'')+' selected';
+  document.getElementById('cmpBar').classList.toggle('sh2',cList.length>0);
+}
+
+// Booking
+let insOn=false;
+const imap={'Sony ZV-1':'https://m.media-amazon.com/images/I/71S9jFOJBVL._AC_SX679_.jpg','Fujifilm X-S20':'https://m.media-amazon.com/images/I/61i+tWFa2cL._AC_SX679_.jpg','Canon EOS R50':'https://m.media-amazon.com/images/I/61+M04MqQJL._AC_SX679_.jpg','GoPro Hero 12':'https://m.media-amazon.com/images/I/71gidVGQIhL._AC_SX679_.jpg','DJI Osmo Pocket 3':'https://m.media-amazon.com/images/I/61xWD4xKolL._AC_SX679_.jpg'};
+
+function pick(name,price){
+  const s=document.getElementById('bkCam');
+  for(let o of s.options){if(o.value.startsWith(name+'|')){s.value=o.value;break;}}
+  const si=document.getElementById('sumImg');if(imap[name]){si.src=imap[name];si.style.display='block';}
+  document.getElementById('sumName').textContent=name;calcSum();
+}
+function togIns(){insOn=!insOn;document.getElementById('insTog').classList.toggle('on',insOn);document.getElementById('sInsRow').style.display=insOn?'flex':'none';calcSum();}
+function calcSum(){
+  const v=document.getElementById('bkCam').value.split('|');const name=v[0],pr=parseInt(v[1]);
+  document.getElementById('sumName').textContent=name;document.getElementById('sDaily').textContent='$'+pr+'/day';
+  if(imap[name]){const si=document.getElementById('sumImg');si.src=imap[name];si.style.display='block';}
+  const d1=document.getElementById('d1').value,d2=document.getElementById('d2').value;
+  if(d1&&d2){const days=Math.max(1,Math.round((new Date(d2)-new Date(d1))/86400000));const ins=insOn?5*days:0;
+    document.getElementById('sDays').textContent=days+' day'+(days!==1?'s':'');
+    document.getElementById('sumMeta').textContent=days+' days rental';
+    document.getElementById('sIns').textContent='+$'+ins;
+    document.getElementById('sTotal').textContent='$'+(pr*days+ins);}
+}
+function doConfirm(){if(!document.getElementById('d1').value){alert('Please select rental dates.');return;}document.getElementById('modal').classList.add('op');}
+function closeModal(){document.getElementById('modal').classList.remove('op');go('home');}
+
+// Default dates
+const t=new Date(),nw=new Date(t);nw.setDate(t.getDate()+7);
+document.getElementById('d1').value=t.toISOString().split('T')[0];
+document.getElementById('d2').value=nw.toISOString().split('T')[0];
+calcSum();
+</script>
+</body>
+</html>
